@@ -1,0 +1,3 @@
+[submodule "min-dalle"]
+	path = min-dalle
+	url = https://github.com/kuprel/min-dalle
