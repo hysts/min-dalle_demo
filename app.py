@@ -3,31 +3,9 @@
 import gradio as gr
 import numpy as np
 
-from model import Model
+from model import AppModel
 
 DESCRIPTION = '# <a href="https://github.com/kuprel/min-dalle">min(DALL·E)</a>'
-
-model = Model()
-
-
-def make_grid(images: list[np.ndarray], nrows: int, ncols: int) -> np.ndarray:
-    h, w = images[0].shape[:2]
-    grid = np.zeros((h * nrows, w * ncols, 3), dtype=np.uint8)
-    for i in range(nrows):
-        for j in range(ncols):
-            index = ncols * i + j
-            if index >= len(images):
-                break
-            grid[h * i:h * (i + 1), w * j:w * (j + 1)] = images[index]
-    return grid
-
-
-def generate(text: str, is_mega: bool, seed: int, nrows: int,
-             ncols: int) -> tuple[np.ndarray, list[np.ndarray]]:
-    seeds = [seed + i for i in range(nrows * ncols)]
-    res = model.generate_images(text, seeds, is_mega)
-    grid = make_grid(res, nrows, ncols)
-    return grid, res
 
 
 def set_example_text(example: list) -> dict:
@@ -35,6 +13,7 @@ def set_example_text(example: list) -> dict:
 
 
 def main():
+    model = AppModel()
     with gr.Blocks(css='style.css') as demo:
         gr.Markdown(DESCRIPTION)
 
@@ -42,7 +21,10 @@ def main():
             with gr.Column():
                 with gr.Group():
                     text = gr.Textbox(label='Input Text')
-                    is_mega = gr.Checkbox(label='Mega', value=True)
+                    model_name = gr.Radio(choices=['dalle-mini', 'dalle-mega'],
+                                          value='dalle-mini',
+                                          type='value',
+                                          label='Model')
                     seed = gr.Slider(0, 100000, value=0, step=1, label='Seed')
                     nrows = gr.Slider(1,
                                       4,
@@ -67,10 +49,10 @@ def main():
                     with gr.TabItem('Output (Gallery)'):
                         result_gallery = gr.Gallery(show_label=False)
 
-        run_button.click(fn=generate,
+        run_button.click(fn=model.run,
                          inputs=[
                              text,
-                             is_mega,
+                             model_name,
                              seed,
                              nrows,
                              ncols,

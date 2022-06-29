@@ -1,0 +1,26 @@
+diff --git a/min_dalle/min_dalle_torch.py b/min_dalle/min_dalle_torch.py
+index ad7b8eb..7098ef9 100644
+--- a/min_dalle/min_dalle_torch.py
++++ b/min_dalle/min_dalle_torch.py
+@@ -1,3 +1,5 @@
++import os
++
+ import numpy
+ import torch
+ from torch import Tensor
+@@ -103,11 +105,12 @@ def generate_image_tokens_torch(
+ 
+ def detokenize_torch(image_tokens: numpy.ndarray) -> numpy.ndarray:
+     print("detokenizing image")
+-    model_path = './pretrained/vqgan'
++    model_dir = os.getenv('DALLE_MODEL_DIR', 'pretrained')
++    model_path = f'{model_dir}/vqgan'
+     params = load_vqgan_torch_params(model_path)
+     detokenizer = VQGanDetokenizer()
+     detokenizer.load_state_dict(params)
+     image_tokens = torch.tensor(image_tokens).to(torch.long)
+     image = detokenizer.forward(image_tokens).to(torch.uint8)
+     return image.detach().numpy()
+-    
+\ No newline at end of file
++

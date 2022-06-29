@@ -10,10 +10,16 @@ This is an unofficial demo app for [min(DALL·E)](https://github.com/kuprel/min-
 git clone --recursive https://github.com/hysts/min-dalle_demo
 cd min-dalle_demo
 docker compose build
+
+cd min-dalle
+patch -p1 < ../patch
 ```
 
 ## Download pretrained models
-Follow [the instructions](https://github.com/kuprel/min-dalle#setup) of min(DALL·E) repo.
+```bash
+sudo apt install git-lfs
+bash download_models.sh
+```
 
 ## Run
 ```baash
